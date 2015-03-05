@@ -32,15 +32,18 @@ angular.module 'builder.controller', ['builder.provider']
         ###
         copyObjectToScope formObject, $scope
 
+        $scope.valuesText = (option["value"] for option in formObject.templateOptions.options ).join '\n'
         $scope.optionsText = formObject.options.join '\n'
 
-        $scope.$watch '[label, description, placeholder, required, options, validation]', ->
+        $scope.$watch '[label, description, placeholder, required, options, validation, templateOptions]', ->
             formObject.label = $scope.label
             formObject.description = $scope.description
             formObject.placeholder = $scope.placeholder
             formObject.required = $scope.required
             formObject.options = $scope.options
             formObject.validation = $scope.validation
+#           A LA FORMLY
+            formObject.templateOptions = $scope.templateOptions
         , yes
 
         $scope.$watch 'optionsText', (text) ->
@@ -50,12 +53,14 @@ angular.module 'builder.controller', ['builder.provider']
         component = $builder.components[formObject.component]
         $scope.validationOptions = component.validationOptions
 
+#        TODO: Backup and Rollback contents of the templateOptions object
     $scope.data =
         model: null
         backup: ->
             ###
             Backup input value.
             ###
+
             @model =
                 label: $scope.label
                 description: $scope.description
@@ -63,6 +68,7 @@ angular.module 'builder.controller', ['builder.provider']
                 required: $scope.required
                 optionsText: $scope.optionsText
                 validation: $scope.validation
+                templateOptions: angular.copy($scope.templateOptions)
         rollback: ->
             ###
             Rollback input value.
@@ -74,6 +80,7 @@ angular.module 'builder.controller', ['builder.provider']
             $scope.required = @model.required
             $scope.optionsText = @model.optionsText
             $scope.validation = @model.validation
+            $scope.templateOptions = @model.templateOptions
 ]
 
 

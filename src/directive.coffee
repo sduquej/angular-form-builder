@@ -20,7 +20,7 @@ angular.module 'builder.directive', [
 
     restrict: 'A'
     scope:
-        fbBuilder: '='
+        fbBuilder: '=' #default
     template:
         """
         <div class='form-horizontal'>
@@ -212,6 +212,7 @@ angular.module 'builder.directive', [
             $("div.fb-form-object-editable:not(.#{popover.id})").popover 'hide'
 
             $popover = $("form.#{popover.id}").closest '.popover'
+            $(element).addClass('active');
             if $popover.length > 0
                 # fixed offset
                 elementOrigin = $(element).offset().top + $(element).height() / 2
@@ -247,6 +248,7 @@ angular.module 'builder.directive', [
                 else
                     scope.$apply -> scope.popover.cancel()
             $popover.removeClass 'in'
+            $(element).removeClass 'active'
             setTimeout ->
                 $popover.hide()
             , 300
