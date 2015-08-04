@@ -19,7 +19,7 @@ angular.module 'builder.provider', []
     $templateCache = null
 
     @config =
-        popoverPlacement: 'right'
+        popoverPlacement: 'auto right'
     # all components
     @components = {}
     # all groups of components
@@ -41,24 +41,17 @@ angular.module 'builder.provider', []
         result =
             name: name
             group: component.group ? 'Default'
-            label: component.label ? ''
-            description: component.description ? ''
-            placeholder: component.placeholder ? ''
+            key: component.key ? 'unique_id'
+            type: component.type ? ''
             editable: component.editable ? yes
-            required: component.required ? no
-            validation: component.validation ? '/.*/'
+            inputTypes : component.inputTypes ? []
             validationOptions: component.validationOptions ? []
-            options: component.options ? []
-            arrayToText: component.arrayToText ? no
+
             template: component.template
             templateUrl: component.templateUrl
             popoverTemplate: component.popoverTemplate
             popoverTemplateUrl: component.popoverTemplateUrl
             templateOptions: angular.copy(component.templateOptions) ? {options: []}
-#                label: component.label ? ''
-#                placeholder: component.placeholder ? ''
-#                required: component.required ? no
-#                options: component.options ? []
         if not result.template and not result.templateUrl
             console.error "The template is empty."
         if not result.popoverTemplate and not result.popoverTemplateUrl
@@ -73,17 +66,9 @@ angular.module 'builder.provider', []
             component: formObject.component
             editable: formObject.editable ? component.editable
             index: formObject.index ? 0
-            label: formObject.label ? component.label
-            description: formObject.description ? component.description
-            placeholder: formObject.placeholder ? component.placeholder
-            options: formObject.options ? component.options
-            required: formObject.required ? component.required
-            validation: formObject.validation ? component.validation
+            key: formObject.key ? component.key
+            type: formObject.type ? component.type
             templateOptions: angular.copy(formObject.templateOptions) ? angular.copy(component.templateOptions)
-#              label: formObject.label ? component.label
-#              placeholder: formObject.placeholder ? component.placeholder
-#              required: formObject.required ? component.required
-#              options: formObject.templateOptions && formObject.templateOptions.options ? component.options
         result
 
     @reindexFormObject = (name) =>

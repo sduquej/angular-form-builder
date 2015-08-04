@@ -32,57 +32,36 @@ angular.module 'builder.controller', ['builder.provider']
         ###
         copyObjectToScope formObject, $scope
 
-        $scope.valuesText = (option["value"] for option in formObject.templateOptions.options ).join '\n'
-        $scope.optionsText = formObject.options.join '\n'
 
-        $scope.$watch '[label, description, placeholder, required, options, validation, templateOptions]', ->
-            formObject.label = $scope.label
-            formObject.description = $scope.description
-            formObject.placeholder = $scope.placeholder
-            formObject.required = $scope.required
-            formObject.options = $scope.options
-            formObject.validation = $scope.validation
-#           A LA FORMLY
+        $scope.$watch '[key, templateOptions, data, validation]', ->
+            formObject.key = $scope.key
             formObject.templateOptions = $scope.templateOptions
+            formObject.validation = $scope.validation
         , yes
-
-        $scope.$watch 'optionsText', (text) ->
-            $scope.options = (x for x in text.split('\n') when x.length > 0)
-            $scope.inputText = $scope.options[0]
 
         component = $builder.components[formObject.component]
         $scope.validationOptions = component.validationOptions
+        $scope.inputTypes = component.inputTypes
 
-#        TODO: Backup and Rollback contents of the templateOptions object
     $scope.data =
         model: null
         backup: ->
             ###
             Backup input value.
             ###
-
             @model =
-                label: $scope.label
-                description: $scope.description
-                placeholder: $scope.placeholder
-                required: $scope.required
-                optionsText: $scope.optionsText
-                validation: $scope.validation
-                templateOptions: angular.copy($scope.templateOptions)
+              key: $scope.key
+              templateOptions: angular.copy($scope.templateOptions)
+              validation: angular.copy($scope.validation)
         rollback: ->
             ###
             Rollback input value.
             ###
             return if not @model
-            $scope.label = @model.label
-            $scope.description = @model.description
-            $scope.placeholder = @model.placeholder
-            $scope.required = @model.required
-            $scope.optionsText = @model.optionsText
-            $scope.validation = @model.validation
+            $scope.key = @model.key
             $scope.templateOptions = @model.templateOptions
+            $scope.validation = @model.validation
 ]
-
 
 # ----------------------------------------
 # fbComponentsController

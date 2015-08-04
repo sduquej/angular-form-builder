@@ -5,7 +5,8 @@
 angular.module 'builder.directive', [
     'builder.provider'
     'builder.controller'
-    'builder.drag'
+    'builder.drag',
+    'builder.filter',
     'validator'
 ]
 
@@ -219,7 +220,7 @@ angular.module 'builder.directive', [
                 popoverTop = elementOrigin - $popover.height() / 2
                 $popover.css
                     position: 'absolute'
-                    top: popoverTop
+                    top: if popoverTop > 0 then popoverTop else 0
 
                 $popover.show()
                 setTimeout ->
@@ -233,6 +234,8 @@ angular.module 'builder.directive', [
         $(element).on 'shown.bs.popover', ->
             # select the first input
             $(".popover .#{popover.id} input:first").select()
+            # move inside
+            $('.popover.in').css('top', 0 + 'px') if parseInt($('.popover.in').css('top')) < 0
             scope.$apply -> scope.popover.shown()
             return
         # ----------------------------------------
@@ -381,8 +384,8 @@ angular.module 'builder.directive', [
             $(element).html view
 
         # select the first option
-        if not scope.$component.arrayToText and scope.formObject.options.length > 0
-            scope.inputText = scope.formObject.options[0]
+        if not scope.$component.arrayToText and scope.formObject.templateOptions.options.length > 0
+            scope.inputText = scope.formObject.templateOptions.options[0].value
 
         # set default value
         scope.$watch "default['#{scope.formObject.id}']", (value) ->

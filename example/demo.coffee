@@ -1,14 +1,17 @@
 angular.module 'app', ['builder', 'builder.components', 'validator.rules']
 
 .run ['$builder', ($builder) ->
-    $builder.registerComponent 'map',
-        group: 'from html'
-        label: 'Location'
-        description: 'Template for location'
-        placeholder: 'User defined component'
-        required: no
-        templateUrl: 'example/template.html'
-        popoverTemplateUrl: 'example/popoverTemplate.html'
+#    $builder.registerComponent 'map',
+#        key: 'location'
+#        group: 'from html'
+#        templateUrl: 'example/template.html'
+#        popoverTemplateUrl: 'example/popoverTemplate.html'
+#        templateOptions:
+#          label: 'Location'
+#          description: 'Template for location'
+#          placeholder: 'User defined component'
+#          required: no
+#          options: []
 ]
 
 
@@ -17,25 +20,30 @@ angular.module 'app', ['builder', 'builder.components', 'validator.rules']
     # builder
     # ----------------------------------------
     textbox = $builder.addFormObject 'default',
-        id: 'textbox'
-        component: 'textInput'
-        label: 'Forename'
-        description: ''
-        placeholder: 'Sebastián'
-        required: yes
+        key: 'fname'
+#        id: 'textbox'
+        component: 'input'
+        templateOptions:
+          type: 'text'
+          required: yes
+          label: 'Forename'
+          description: ''
+          placeholder: 'Sebastián'
+          options: []
 
     select = $builder.addFormObject 'default',
-        id: 'se'
+        key: 'gender'
         component: 'select'
-        label: 'Gender'
+#        id: 'se'
         templateOptions:
+          label: 'Gender'
           options: [
             {name: "Do not specify", value: ""}
             {name: "Female", value: "F"}
             {name: "Male", value: "M"}
           ]
-    $builder.addFormObject 'default',
-        component: 'map'
+#    $builder.addFormObject 'default',
+#        component: 'map'
     # formObjects
     $scope.form = $builder.forms['default']
 

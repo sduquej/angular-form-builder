@@ -4,56 +4,55 @@ angular.module 'builder.components', ['builder', 'validator.rules']
     # ----------------------------------------
     # text input
     # ----------------------------------------
-    $builderProvider.registerComponent 'textInput',
+    $builderProvider.registerComponent 'input',
         group: 'Default'
-        label: 'Text Input'
-        description: 'description'
-        placeholder: 'placeholder'
-        required: no
-        validationOptions: [
-            {label: 'none', rule: '/.*/'}
-            {label: 'number', rule: '[number]'}
-            {label: 'email', rule: '[email]'}
-            {label: 'url', rule: '[url]'}
-        ]
+        key: 'unique_id'
+        type: 'input'
+        inputTypes: ['text', 'number', 'email', 'url']
         templateOptions:
+          type: 'text'
           label: 'Text Input'
           placeholder: 'Text Input placeholder'
+          description: 'This field may be validated as: number, email or url'
           required: no
           options: []
         template:
             """
             <div class="form-group">
-                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{label}}</label>
+                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{templateOptions.label}}</label>
                 <div class="col-sm-8">
-                    <input type="text" ng-model="inputText" validator-required="{{required}}" validator-group="{{formName}}" id="{{formName+index}}" class="form-control" placeholder="{{placeholder}}"/>
-                    <p class='help-block'>{{description}}</p>
+                    <input type="text" ng-model="inputText" validator-required="{{templateOptions.required}}" validator-group="{{formName}}" id="{{formName+index}}" class="form-control" placeholder="{{templateOptions.placeholder}}"/>
+                    <p class='help-block'>{{templateOptions.description}}</p>
                 </div>
             </div>
             """
         popoverTemplate:
             """
             <form>
+                 <div class="form-group">
+                    <label class='control-label'>Column Name</label>
+                    <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+                </div>
                 <div class="form-group">
                     <label class='control-label'>Label</label>
-                    <input type='text' ng-model="label" validator="[required]" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
                 </div>
                 <div class="form-group">
                     <label class='control-label'>Description</label>
-                    <input type='text' ng-model="description" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.description" class='form-control'/>
                 </div>
                 <div class="form-group">
                     <label class='control-label'>Placeholder</label>
-                    <input type='text' ng-model="placeholder" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.placeholder" class='form-control'/>
                 </div>
                 <div class="checkbox">
                     <label>
-                        <input type='checkbox' ng-model="required" />
+                        <input type='checkbox' ng-model="templateOptions.required" />
                         Required</label>
                 </div>
-                <div class="form-group" ng-if="validationOptions.length > 0">
-                    <label class='control-label'>Validation</label>
-                    <select ng-model="$parent.validation" class='form-control' ng-options="option.rule as option.label for option in validationOptions"></select>
+                <div class="form-group">
+                    <label class='control-label'>Type of Data</label>
+                    <select ng-model="templateOptions.type" class='form-control' ng-options="type for type in inputTypes"></select>
                 </div>
 
                 <hr/>
@@ -70,22 +69,21 @@ angular.module 'builder.components', ['builder', 'validator.rules']
     # ----------------------------------------
     $builderProvider.registerComponent 'textArea',
         group: 'Default'
-        label: 'Text Area'
-        description: 'description'
-        placeholder: 'placeholder'
-        required: no
+        key: 'unique_id'
+        type: 'textarea'
         templateOptions:
           label: 'Text Area'
           placeholder: 'Text Area placeholder'
+          description: 'Useful for open questions and long text'
           required: no
           options: []
         template:
             """
             <div class="form-group">
-                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{label}}</label>
+                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{templateOptions.label}}</label>
                 <div class="col-sm-8">
-                    <textarea type="text" ng-model="inputText" validator-required="{{required}}" validator-group="{{formName}}" id="{{formName+index}}" class="form-control" rows='6' placeholder="{{placeholder}}"/>
-                    <p class='help-block'>{{description}}</p>
+                    <textarea type="text" ng-model="templateOptions.inputText" validator-required="{{templateOptions.required}}" validator-group="{{formName}}" id="{{formName+index}}" class="form-control" rows='6' placeholder="{{templateOptions.placeholder}}"/>
+                    <p class='help-block'>{{templateOptions.description}}</p>
                 </div>
             </div>
             """
@@ -93,20 +91,24 @@ angular.module 'builder.components', ['builder', 'validator.rules']
             """
             <form>
                 <div class="form-group">
+                    <label class='control-label'>Column Name</label>
+                    <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+                </div>
+                <div class="form-group">
                     <label class='control-label'>Label</label>
-                    <input type='text' ng-model="label" validator="[required]" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
                 </div>
                 <div class="form-group">
                     <label class='control-label'>Description</label>
-                    <input type='text' ng-model="description" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.description" class='form-control'/>
                 </div>
                 <div class="form-group">
                     <label class='control-label'>Placeholder</label>
-                    <input type='text' ng-model="placeholder" class='form-control'/>
+                    <input type='text' ng-model="templateOptions.placeholder" class='form-control'/>
                 </div>
                 <div class="checkbox">
                     <label>
-                        <input type='checkbox' ng-model="required" />
+                        <input type='checkbox' ng-model="templateOptions.required" />
                         Required</label>
                 </div>
 
@@ -119,144 +121,18 @@ angular.module 'builder.components', ['builder', 'validator.rules']
             </form>
             """
 
-    # ----------------------------------------
-    # checkbox
-    # ----------------------------------------
-    $builderProvider.registerComponent 'checkbox',
-        group: 'Default'
-        label: 'Checkbox'
-        description: 'description'
-        placeholder: 'placeholder'
-        required: no
-        options: ['value one', 'value two','value #3']
-        arrayToText: yes
-        templateOptions:
-          label: 'Checkbox'
-          placeholder: 'Checkbox placeholder'
-          required: no
-          options: [
-            {name: 'Value One', value: '1'}
-            {name: 'Value Two', value: '2'}
-            {name: 'Value #3', value: '3'}
-          ]
-        template:
-            """
-            <div class="form-group">
-                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{label}}</label>
-                <div class="col-sm-8">
-                    <input type='hidden' ng-model="inputText" validator-required="{{required}}" validator-group="{{formName}}"/>
-                    <div class='checkbox' ng-repeat="item in options track by $index">
-                        <label><input type='checkbox' ng-model="$parent.inputArray[$index]" value='{{item}}'/>
-                            {{item}}
-                        </label>
-                    </div>
-                    <p class='help-block'>{{description}}</p>
-                </div>
-            </div>
-            """
-        popoverTemplate:
-            """
-            <form>
-                <div class="form-group">
-                    <label class='control-label'>Label</label>
-                    <input type='text' ng-model="label" validator="[required]" class='form-control'/>
-                </div>
-                <div class="form-group">
-                    <label class='control-label'>Description</label>
-                    <input type='text' ng-model="description" class='form-control'/>
-                </div>
-                <div class="form-group">
-                    <label class='control-label'>Options</label>
-                    <textarea class="form-control" rows="3" ng-model="optionsText"/>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type='checkbox' ng-model="required" />
-                        Required
-                    </label>
-                </div>
 
-                <hr/>
-                <div class='form-group'>
-                    <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
-                    <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
-                    <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
-                </div>
-            </form>
-            """
-
-    # ----------------------------------------
-    # radio
-    # ----------------------------------------
-    $builderProvider.registerComponent 'radio',
-        group: 'Default'
-        label: 'Radio'
-        description: 'description'
-        placeholder: 'placeholder'
-        required: no
-        options: ['pick this', 'or that']
-        #A LA FORMLY
-        templateOptions:
-          label: 'Radio'
-          placeholder: 'Radio placeholder'
-          required: no
-          options: [
-            {name: 'Value One', value: 'O'}
-            {name: 'Value Two', value: 'T'}
-          ]
-        template:
-            """
-            <div class="form-group">
-                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{label}}</label>
-                <div class="col-sm-8">
-                    <div class='radio' ng-repeat="item in options track by $index">
-                        <label><input name='{{formName+index}}' ng-model="$parent.inputText" validator-group="{{formName}}" value='{{item}}' type='radio'/>
-                            {{item}}
-                        </label>
-                    </div>
-                    <p class='help-block'>{{description}}</p>
-                </div>
-            </div>
-            """
-        popoverTemplate:
-            """
-            <form>
-                <div class="form-group">
-                    <label class='control-label'>Label</label>
-                    <input type='text' ng-model="label" validator="[required]" class='form-control'/>
-                </div>
-                <div class="form-group">
-                    <label class='control-label'>Description</label>
-                    <input type='text' ng-model="description" class='form-control'/>
-                </div>
-                <div class="form-group">
-                    <label class='control-label'>Options</label>
-                    <textarea class="form-control" rows="3" ng-model="optionsText"/>
-                </div>
-
-                <hr/>
-                <div class='form-group'>
-                    <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
-                    <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
-                    <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
-                </div>
-            </form>
-            """
 
     # ----------------------------------------
     # select
     # ----------------------------------------
     $builderProvider.registerComponent 'select',
+      key: 'unique_id_select'
       group: 'Default'
-      label: 'Select'
-      description: 'description'
-      placeholder: 'placeholder'
-      required: no
-      options: ['value one', 'value two']
-      #A LA FORMLY
+      type: 'select'
       templateOptions:
         label: 'Select'
-        placeholder: 'select placeholder'
+        description: 'An option may be selected'
         required: no
         options: [
             {name: 'First Option', value: 'F'}
@@ -265,43 +141,52 @@ angular.module 'builder.components', ['builder', 'validator.rules']
       template:
           """
           <div class="form-group">
-              <label for="{{formName+index}}" class="col-sm-4 control-label">{{label}}</label>
+              <label for="{{formName+index}}" class="col-sm-4 control-label">{{templateOptions.label}}</label>
               <div class="col-sm-8">
                   <select ng-options="option.value as option.name for option in templateOptions.options" id="{{formName+index}}" class="form-control"
                       ng-model="inputText" ng-init="inputText = options[0]"/>
-                  <p class='help-block'>{{description}}</p>
+                  <p class='help-block'>{{templateOptions.description}}</p>
               </div>
           </div>
           """
       popoverTemplate:
           """
           <form>
+            <div class="form-group">
+              <label class='control-label'>Column Name</label>
+              <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+            </div>
               <div class="form-group">
                   <label class='control-label'>Label</label>
-                  <input type='text' ng-model="label" validator="[required]" class='form-control'/>
+                  <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
               </div>
               <div class="form-group">
                   <label class='control-label'>Description</label>
-                  <input type='text' ng-model="description" class='form-control'/>
+                  <input type='text' ng-model="templateOptions.description" class='form-control'/>
               </div>
               <div class="form-group">
-                  <label class='control-label'>Template Options</label>
+                  <label class='control-label'>Options</label>
+
                   <button type="button" class="btn btn-success btn-xs" aria-label="Add Option" ng-click='templateOptions.options.push({"name": "New Option","value":"New!"})'>
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                   </button>
-                  <div ng-repeat='option in templateOptions.options' class="form-group">
-                      <label class='control-label'>Option {{$index+1}} </label>
-                    <button type="button" class="btn btn-danger btn-xs" aria-label="Remove Option" ng-click='templateOptions.options.splice($index,1)'>
-                      <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
-                    </button>
-                    <div class="form-inline">
+
+                  <div ng-repeat='option in templateOptions.options' class="form-inline">
+                    <div class="row">
+                      <div class="col-md-10">
+                        <label class='control-label'>Option {{$index+1}} </label>
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-xs" aria-label="Remove Option" ng-click='templateOptions.options.splice($index,1)'>
+                          <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
                       Value <input type="text" ng-model='option.value'class="form-control"/>
                       Name <input type="text" ng-model='option.name' class="form-control"/>
                     </div>
                   </div>
-<!--                  <textarea class="form-control" rows="3" ng-model="valuesText"/>
-                  <textarea class="form-control" rows="3" ng-model="optionsText"/>
--->
               </div>
 
               <hr/>
@@ -314,61 +199,132 @@ angular.module 'builder.components', ['builder', 'validator.rules']
           """
 
       # ----------------------------------------
-      # upload photo button
+      # radio
       # ----------------------------------------
-      $builderProvider.registerComponent 'uploadPhoto',
-        group: 'Advanced'
-        label: 'Upload Photo'
-        description: 'description'
-        required: no
+      $builderProvider.registerComponent 'radio',
+        group: 'Default'
+        key: 'unique_id'
+        type: 'radio'
+        templateOptions:
+          label: 'Radio'
+          description: 'Only one option may be chosen'
+          required: no
+          options: [
+            {name: 'Value One', value: 'O'}
+            {name: 'Value Two', value: 'T'}
+          ]
         template:
           """
-          <div class="row">
-              <label class="col-sm-2 control-label">
-                  <label for="{{formName+index}}" ng-class="{'fb-required':required}">{{label}}</label>
-                  <br>
-                  <small class="help-block text-muted custom-small">{{description}}</small>
-              </label>
-              <div class="col-sm-10">
-                  <input type="file" class="m-b" accept="image/*" capture="camera" id="{{formName+index}}">
+          <div class="form-group">
+            <label for="{{formName+index}}" class="col-sm-4 control-label">{{templateOptions.label}}</label>
+            <div class="col-sm-8">
+              <div ng-repeat="(key, option) in templateOptions.options" class="radio">
+                <label>
+                  <input type="radio"
+                     ng-value="option.value"
+                     name="{{formName+index}}" />
+                  {{option.name}}
+                </label>
               </div>
+              <p class='help-block'>{{templateOptions.description}}</p>
+            </div>
           </div>
           """
         popoverTemplate:
           """
-          <form>
-              <div role="tabpanel">
-                  <!-- Nav tabs -->
-                  <ul class="nav nav-justified nav-tabs" role="tablist" style="margin-left:-10px">
-                      <li role="presentation" class="active"><a href="{{'#properties' + date + index}}" aria-controls="{{'properties' + date + index}}" role="tab" data-toggle="tab">Properties</a></li>
-                      <li role="presentation"><a href="{{'#validations' + date + index}}" aria-controls="{{'validations' + date + index}}" role="tab" data-toggle="tab">Validations</a></li>
-                  </ul>
-                  <!-- Tab panes -->
-                  <div class="tab-content">
-                      <div role="tabpanel" class="tab-pane active" id="{{'properties' + date + index}}">
-                          <div class="form-group">
-                              <label class='control-label'>Label</label>
-                              <input type='text' ng-model="label" validator="[required]" class='form-control'/>
-                          </div>
-                          <div class="form-group">
-                              <label class='control-label'>Description</label>
-                              <input type='text' ng-model="description" class='form-control'/>
-                          </div>
-                      </div>
-                      <div role="tabpanel" class="tab-pane" id="{{'validations' + date + index}}">
-                          <div class="checkbox">
-                              <label>
-                                  <input type='checkbox' ng-model="required" />
-                                  Required</label>
-                          </div>
-                          <div class="form-group" ng-if="validationOptions.length > 0">
-                              <label class='control-label'>Validation</label>
-                              <select ng-model="$parent.validation" class='form-control' ng-options="option.rule as option.label for option in validationOptions"></select>
-                          </div>
-                      </div>
+           <form>
+            <div class="form-group">
+              <label class='control-label'>Column Name</label>
+              <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+            </div>
+              <div class="form-group">
+                  <label class='control-label'>Label</label>
+                  <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+              </div>
+              <div class="form-group">
+                  <label class='control-label'>Description</label>
+                  <input type='text' ng-model="templateOptions.description" class='form-control'/>
+              </div>
+              <div class="form-group">
+                  <label class='control-label'>Options</label>
 
+                  <button type="button" class="btn btn-success btn-xs" aria-label="Add Option" ng-click='templateOptions.options.push({"name": "New Option","value":"New!"})'>
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </button>
+
+                  <div ng-repeat='option in templateOptions.options' class="form-inline">
+                    <div class="row">
+                      <div class="col-md-10">
+                        <label class='control-label'>Option {{$index+1}} </label>
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-xs" aria-label="Remove Option" ng-click='templateOptions.options.splice($index,1)'>
+                          <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      Value <input type="text" ng-model='option.value'class="form-control"/>
+                      Name <input type="text" ng-model='option.name' class="form-control"/>
+                    </div>
                   </div>
               </div>
+
+              <hr/>
+              <div class='form-group'>
+                  <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+                  <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+                  <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+              </div>
+          </form>
+          """
+
+      # ----------------------------------------
+      # file upload input
+      # ----------------------------------------
+      $builderProvider.registerComponent 'file',
+        group: 'Advanced'
+        key: 'files'
+        type: 'fileField'
+        templateOptions:
+          label: 'Upload File'
+          required: no
+          description: 'description'
+          options: []
+        template:
+          """
+            <div class="form-group">
+                <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{templateOptions.label}}</label>
+                <div class="col-sm-8">
+                    <input type="file" class="m-b" id="{{formName+index}}">
+                    <p class='help-block'>{{templateOptions.description}}</p>
+                </div>
+            </div>
+          """
+        popoverTemplate:
+          """
+          <form>
+            <!-- The key for the file input must always be 'files'
+            <div class="form-group">
+                <label class='control-label'>Column Name</label>
+              <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+            </div>
+            -->
+            <div class="form-group">
+                <label class='control-label'>Label</label>
+                <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+            </div>
+            <div class="form-group">
+                <label class='control-label'>Description</label>
+                <input type='text' ng-model="templateOptions.description" class='form-control'/>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type='checkbox' ng-model="templateOptions.required" />
+                    Required
+                </label>
+            </div>
+
               <hr/>
               <div class='form-group'>
                   <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Apply'/>
@@ -377,4 +333,317 @@ angular.module 'builder.components', ['builder', 'validator.rules']
               </div>
           </form>
           """
+
+    # ----------------------------------------
+    # checkbox
+    # ----------------------------------------
+    $builderProvider.registerComponent 'checkbox',
+        group: 'Default'
+        key: 'unique_id_checkbox'
+        type: 'checkbox'
+        templateOptions:
+          label: 'Checkbox'
+          description: 'This input may be ticked'
+          required: no
+          options: []
+        template:
+            """
+            <div class="form-group">
+              <div class="col-sm-8 col-sm-offset-4 checkbox">
+                <label>
+                  <input type="checkbox"/>
+                  {{templateOptions.label}}
+                </label>
+                <p class='help-block'>{{templateOptions.description}}</p>
+              </div>
+            </div>
+            """
+        popoverTemplate:
+            """
+            <form>
+                <div class="form-group">
+                  <label class='control-label'>Column Name</label>
+                  <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+                </div>
+                <div class="form-group">
+                    <label class='control-label'>Label</label>
+                    <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+                </div>
+                <div class="form-group">
+                    <label class='control-label'>Description</label>
+                    <input type='text' ng-model="templateOptions.description" class='form-control'/>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type='checkbox' ng-model="templateOptions.required" />
+                        Required</label>
+                </div>
+                <hr/>
+                <div class='form-group'>
+                    <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+                    <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+                    <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+                </div>
+            </form>
+            """
+    # ----------------------------------------
+    # date input
+    # ----------------------------------------
+    $builderProvider.registerComponent 'date',
+      group: 'Advanced'
+      key: 'unique_date_id'
+      type: 'input'
+      templateOptions:
+        type: 'date'
+        label: 'Date Input'
+        description: 'Perhaps the date of the observation?'
+        placeholder: 'yyyy-mm-dd'
+        required: no
+        options: []
+      template:
+        """
+        <div class="form-group">
+            <label for="{{formName+index}}" class="col-sm-4 control-label" ng-class="{'fb-required':required}">{{templateOptions.label}}</label>
+            <div class="col-sm-8">
+                <input type="date" ng-model="inputText" validator-required="{{templateOptions.required}}" validator-group="{{formName}}" id="{{formName+index}}" class="form-control""/>
+                <p class='help-block'>{{templateOptions.description}}</p>
+            </div>
+        </div>
+        """
+      popoverTemplate:
+        """
+        <form>
+             <div class="form-group">
+                <label class='control-label'>Column Name</label>
+                <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+            </div>
+            <div class="form-group">
+                <label class='control-label'>Label</label>
+                <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+            </div>
+            <div class="form-group">
+                <label class='control-label'>Description</label>
+                <input type='text' ng-model="templateOptions.description" class='form-control'/>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type='checkbox' ng-model="templateOptions.required" />
+                    Required</label>
+            </div>
+            <hr/>
+            <div class='form-group'>
+                <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+                <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+                <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+            </div>
+        </form>
+        """
+
+    ######################
+    # Current Location
+    ######################
+    $builderProvider.registerComponent 'currentLocation',
+      key: 'location'
+      type: 'currentLocation'
+      group: 'Advanced'
+      templateOptions:
+        label: 'Location'
+        description: 'Get GPS location'
+        placeholder: 'Coordinates'
+        required: no
+        options: []
+      template:
+        """
+        <div class="form-group">
+          <label for="{{formName+index}}" class="col-sm-4 control-label">{{templateOptions.label}}</label>
+          <div class="col-sm-8">
+            <div class="input-group">
+              <input class="form-control" type="text" disabled placeholder="Coordinates" ng-model="vm.location"/>
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="vm.setLocation()">
+                  <i class="glyphicon glyphicon-map-marker"></i>
+                </button>
+              </span>
+            </div>
+            <p class='help-block'>{{templateOptions.description}}</p>
+          </div>
+
+        """
+      popoverTemplate:
+        """
+        <form>
+          <div class="form-group">
+            <label class='control-label'>Column Name</label>
+            <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Label</label>
+              <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Placeholder</label>
+              <input type='text' ng-model="templateOptions.placeholder" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Description</label>
+              <input type='text' ng-model="templateOptions.description" class='form-control'/>
+          </div>
+          <div class="checkbox">
+              <label>
+                  <input type='checkbox' ng-model="templateOptions.required" />
+                  Required</label>
+          </div>
+          <hr/>
+          <div class='form-group'>
+              <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+              <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+              <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+          </div>
+        </form>
+        """
+
+    ######################
+    # Map Location
+    ######################
+    $builderProvider.registerComponent 'mapLocation',
+      key: 'location'
+      type: 'mapLocation'
+      group: 'Advanced'
+      templateOptions:
+        label: 'Map location'
+        description: 'Select location'
+        placeholder: 'Click on map'
+        required: no
+        options: []
+      template:
+        """
+        <div class="form-group">
+          <label for="{{formName+index}}" class="col-sm-4 control-label">{{templateOptions.label}}</label>
+          <div class="col-sm-8">
+            <div class="input-group">
+              <input class="form-control" type="text" disabled placeholder="Coordinates" ng-model="vm.location"/>
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="vm.setLocation()">
+                  <i class="glyphicon glyphicon-globe"></i>
+                </button>
+              </span>
+            </div>
+            <p class='help-block'>{{templateOptions.description}}</p>
+          </div>
+        """
+      popoverTemplate:
+        """
+        <form>
+          <div class="form-group">
+            <label class='control-label'>Column Name</label>
+            <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Label</label>
+              <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Placeholder</label>
+              <input type='text' ng-model="templateOptions.placeholder" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Description</label>
+              <input type='text' ng-model="templateOptions.description" class='form-control'/>
+          </div>
+          <div class="checkbox">
+              <label>
+                  <input type='checkbox' ng-model="templateOptions.required" />
+                  Required
+              </label>
+          </div>
+          <hr/>
+          <div class='form-group'>
+              <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+              <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+              <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+          </div>
+        </form>
+        """
+
+    # ----------------------------------------
+    # County select
+    # ----------------------------------------
+    $builderProvider.registerComponent 'countySelect',
+      key: 'county'
+      group: 'Advanced'
+      type: 'select'
+      templateOptions:
+        label: 'County'
+        description: 'Select a County'
+        required: no
+        options: [
+          {name: 'Antrim', value: 'Antrim'}
+          {name: 'Armagh', value: 'Armagh'}
+          {name: 'Carlow', value: 'Carlow'}
+          {name: 'Cavan', value: 'Cavan'}
+          {name: 'Clare', value: 'Clare'}
+          {name: 'Cork', value: 'Cork'}
+          {name: 'Derry', value: 'Derry'}
+          {name: 'Donegal', value: 'Donegal'}
+          {name: 'Down', value: 'Down'}
+          {name: 'Dublin', value: 'Dublin'}
+          {name: 'Fermanagh', value: 'Fermanagh'}
+          {name: 'Galway', value: 'Galway'}
+          {name: 'Kerry', value: 'Kerry'}
+          {name: 'Kildare', value: 'Kildare'}
+          {name: 'Kilkenny', value: 'Kilkenny'}
+          {name: 'Laois', value: 'Laois'}
+          {name: 'Leitrim', value: 'Leitrim'}
+          {name: 'Limerick', value: 'Limerick'}
+          {name: 'Longford', value: 'Longford'}
+          {name: 'Louth', value: 'Louth'}
+          {name: 'Mayo', value: 'Mayo'}
+          {name: 'Meath', value: 'Meath'}
+          {name: 'Monaghan', value: 'Monaghan'}
+          {name: 'Offaly', value: 'Offaly'}
+          {name: 'Roscommon', value: 'Roscommon'}
+          {name: 'Sligo', value: 'Sligo'}
+          {name: 'Tipperary', value: 'Tipperary'}
+          {name: 'Tyrone', value: 'Tyrone'}
+          {name: 'Waterford', value: 'Waterford'}
+          {name: 'Westmeath', value: 'Westmeath'}
+          {name: 'Wexford', value: 'Wexford'}
+          {name: 'Wicklow', value: 'Wicklow'}
+        ]
+
+      template:
+        """
+        <div class="form-group">
+          <label for="{{formName+index}}" class="col-sm-4 control-label">{{templateOptions.label}}</label>
+          <div class="col-sm-8">
+            <select ng-options="option.value as option.name for option in templateOptions.options" id="{{formName+index}}" class="form-control"
+                ng-model="inputText" ng-init="inputText = options[0]"/>
+            <p class='help-block'>{{templateOptions.description}}</p>
+          </div>
+        </div>
+        """
+      popoverTemplate:
+       """
+       <form>
+        <div class="form-group">
+          <label class='control-label'>Column Name</label>
+          <input type='text' ng-model="key" validator="[required]" class='form-control'/>
+        </div>
+          <div class="form-group">
+              <label class='control-label'>Label</label>
+              <input type='text' ng-model="templateOptions.label" validator="[required]" class='form-control'/>
+          </div>
+          <div class="form-group">
+              <label class='control-label'>Description</label>
+              <input type='text' ng-model="templateOptions.description" class='form-control'/>
+          </div>
+
+          <hr/>
+          <div class='form-group'>
+              <input type='submit' ng-click="popover.save($event)" class='btn btn-primary' value='Save'/>
+              <input type='button' ng-click="popover.cancel($event)" class='btn btn-default' value='Cancel'/>
+              <input type='button' ng-click="popover.remove($event)" class='btn btn-danger' value='Delete'/>
+          </div>
+       </form>
+       """
 ]

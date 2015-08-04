@@ -28,46 +28,16 @@
         4. Watch scope.optionsText then convert to scope.options.
         5. setup validationOptions
          */
-        var component, option;
+        var component;
         copyObjectToScope(formObject, $scope);
-        $scope.valuesText = ((function() {
-          var _i, _len, _ref, _results;
-          _ref = formObject.templateOptions.options;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            option = _ref[_i];
-            _results.push(option["value"]);
-          }
-          return _results;
-        })()).join('\n');
-        $scope.optionsText = formObject.options.join('\n');
-        $scope.$watch('[label, description, placeholder, required, options, validation, templateOptions]', function() {
-          formObject.label = $scope.label;
-          formObject.description = $scope.description;
-          formObject.placeholder = $scope.placeholder;
-          formObject.required = $scope.required;
-          formObject.options = $scope.options;
-          formObject.validation = $scope.validation;
-          return formObject.templateOptions = $scope.templateOptions;
+        $scope.$watch('[key, templateOptions, data, validation]', function() {
+          formObject.key = $scope.key;
+          formObject.templateOptions = $scope.templateOptions;
+          return formObject.validation = $scope.validation;
         }, true);
-        $scope.$watch('optionsText', function(text) {
-          var x;
-          $scope.options = (function() {
-            var _i, _len, _ref, _results;
-            _ref = text.split('\n');
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              x = _ref[_i];
-              if (x.length > 0) {
-                _results.push(x);
-              }
-            }
-            return _results;
-          })();
-          return $scope.inputText = $scope.options[0];
-        });
         component = $builder.components[formObject.component];
-        return $scope.validationOptions = component.validationOptions;
+        $scope.validationOptions = component.validationOptions;
+        return $scope.inputTypes = component.inputTypes;
       };
       return $scope.data = {
         model: null,
@@ -77,13 +47,9 @@
           Backup input value.
            */
           return this.model = {
-            label: $scope.label,
-            description: $scope.description,
-            placeholder: $scope.placeholder,
-            required: $scope.required,
-            optionsText: $scope.optionsText,
-            validation: $scope.validation,
-            templateOptions: angular.copy($scope.templateOptions)
+            key: $scope.key,
+            templateOptions: angular.copy($scope.templateOptions),
+            validation: angular.copy($scope.validation)
           };
         },
         rollback: function() {
@@ -94,13 +60,9 @@
           if (!this.model) {
             return;
           }
-          $scope.label = this.model.label;
-          $scope.description = this.model.description;
-          $scope.placeholder = this.model.placeholder;
-          $scope.required = this.model.required;
-          $scope.optionsText = this.model.optionsText;
-          $scope.validation = this.model.validation;
-          return $scope.templateOptions = this.model.templateOptions;
+          $scope.key = this.model.key;
+          $scope.templateOptions = this.model.templateOptions;
+          return $scope.validation = this.model.validation;
         }
       };
     }
@@ -109,21 +71,21 @@
       var $builder;
       $builder = $injector.get('$builder');
       $scope.selectGroup = function($event, group) {
-        var component, name, _ref, _results;
+        var component, name, ref, results;
         if ($event != null) {
           $event.preventDefault();
         }
         $scope.activeGroup = group;
         $scope.components = [];
-        _ref = $builder.components;
-        _results = [];
-        for (name in _ref) {
-          component = _ref[name];
+        ref = $builder.components;
+        results = [];
+        for (name in ref) {
+          component = ref[name];
           if (component.group === group) {
-            _results.push($scope.components.push(component));
+            results.push($scope.components.push(component));
           }
         }
-        return _results;
+        return results;
       };
       $scope.groups = $builder.groups;
       $scope.activeGroup = $scope.groups[0];
@@ -182,7 +144,7 @@
 }).call(this);
 
 (function() {
-  angular.module('builder.directive', ['builder.provider', 'builder.controller', 'builder.drag', 'validator']).directive('fbBuilder', [
+  angular.module('builder.directive', ['builder.provider', 'builder.controller', 'builder.drag', 'builder.filter', 'validator']).directive('fbBuilder', [
     '$injector', function($injector) {
       var $builder, $drag;
       $builder = $injector.get('$builder');
@@ -194,17 +156,17 @@
         },
         template: "<div class='form-horizontal'>\n    <div class='fb-form-object-editable' ng-repeat=\"object in formObjects\"\n        fb-form-object-editable=\"object\"></div>\n</div>",
         link: function(scope, element, attrs) {
-          var beginMove, _base, _name;
+          var base, beginMove, name;
           scope.formName = attrs.fbBuilder;
-          if ((_base = $builder.forms)[_name = scope.formName] == null) {
-            _base[_name] = [];
+          if ((base = $builder.forms)[name = scope.formName] == null) {
+            base[name] = [];
           }
           scope.formObjects = $builder.forms[scope.formName];
           beginMove = true;
           $(element).addClass('fb-builder');
           return $drag.droppable($(element), {
             move: function(e) {
-              var $empty, $formObject, $formObjects, height, index, offset, positions, _i, _j, _ref, _ref1;
+              var $empty, $formObject, $formObjects, height, i, index, j, offset, positions, ref, ref1;
               if (beginMove) {
                 $("div.fb-form-object-editable").popover('hide');
                 beginMove = false;
@@ -218,14 +180,14 @@
               }
               positions = [];
               positions.push(-1000);
-              for (index = _i = 0, _ref = $formObjects.length; _i < _ref; index = _i += 1) {
+              for (index = i = 0, ref = $formObjects.length; i < ref; index = i += 1) {
                 $formObject = $($formObjects[index]);
                 offset = $formObject.offset();
                 height = $formObject.height();
                 positions.push(offset.top + height / 2);
               }
               positions.push(positions[positions.length - 1] + 1000);
-              for (index = _j = 1, _ref1 = positions.length; _j < _ref1; index = _j += 1) {
+              for (index = j = 1, ref1 = positions.length; j < ref1; index = j += 1) {
                 if (e.pageY > positions[index - 1] && e.pageY <= positions[index]) {
                   $(element).find('.empty').remove();
                   $empty = $("<div class='fb-form-object-editable empty'></div>");
@@ -392,7 +354,7 @@
               popoverTop = elementOrigin - $popover.height() / 2;
               $popover.css({
                 position: 'absolute',
-                top: popoverTop
+                top: popoverTop > 0 ? popoverTop : 0
               });
               $popover.show();
               setTimeout(function() {
@@ -404,6 +366,9 @@
           });
           $(element).on('shown.bs.popover', function() {
             $(".popover ." + popover.id + " input:first").select();
+            if (parseInt($('.popover.in').css('top')) < 0) {
+              $('.popover.in').css('top', 0 + 'px');
+            }
             scope.$apply(function() {
               return scope.popover.shown();
             });
@@ -481,10 +446,10 @@
         template: "<div class='fb-form-object' ng-repeat=\"object in form\" fb-form-object=\"object\"></div>",
         controller: 'fbFormController',
         link: function(scope, element, attrs) {
-          var $builder, _base, _name;
+          var $builder, base, name;
           $builder = $injector.get('$builder');
-          if ((_base = $builder.forms)[_name = scope.formName] == null) {
-            _base[_name] = [];
+          if ((base = $builder.forms)[name = scope.formName] == null) {
+            base[name] = [];
           }
           return scope.form = $builder.forms[scope.formName];
         }
@@ -508,14 +473,14 @@
           if (scope.$component.arrayToText) {
             scope.inputArray = [];
             scope.$watch('inputArray', function(newValue, oldValue) {
-              var checked, index, _ref;
+              var checked, index, ref;
               if (newValue === oldValue) {
                 return;
               }
               checked = [];
               for (index in scope.inputArray) {
                 if (scope.inputArray[index]) {
-                  checked.push((_ref = scope.options[index]) != null ? _ref : scope.inputArray[index]);
+                  checked.push((ref = scope.options[index]) != null ? ref : scope.inputArray[index]);
                 }
               }
               return scope.inputText = checked.join(', ');
@@ -540,8 +505,8 @@
             view = $compile($template)(scope);
             return $(element).html(view);
           });
-          if (!scope.$component.arrayToText && scope.formObject.options.length > 0) {
-            scope.inputText = scope.formObject.options[0];
+          if (!scope.$component.arrayToText && scope.formObject.templateOptions.options.length > 0) {
+            scope.inputText = scope.formObject.templateOptions.options[0].value;
           }
           return scope.$watch("default['" + scope.formObject.id + "']", function(value) {
             if (!value) {
@@ -585,28 +550,28 @@
     $((function(_this) {
       return function() {
         $(document).on('mousedown', function(e) {
-          var func, key, _ref;
+          var func, key, ref;
           _this.mouseMoved = false;
-          _ref = _this.hooks.down;
-          for (key in _ref) {
-            func = _ref[key];
+          ref = _this.hooks.down;
+          for (key in ref) {
+            func = ref[key];
             func(e);
           }
         });
         $(document).on('mousemove', function(e) {
-          var func, key, _ref;
+          var func, key, ref;
           _this.mouseMoved = true;
-          _ref = _this.hooks.move;
-          for (key in _ref) {
-            func = _ref[key];
+          ref = _this.hooks.move;
+          for (key in ref) {
+            func = ref[key];
             func(e);
           }
         });
         return $(document).on('mouseup', function(e) {
-          var func, key, _ref;
-          _ref = _this.hooks.up;
-          for (key in _ref) {
-            func = _ref[key];
+          var func, key, ref;
+          ref = _this.hooks.up;
+          for (key in ref) {
+            func = ref[key];
             func(e);
           }
         });
@@ -744,7 +709,7 @@
           result.element = $clone[0];
           $clone.addClass("fb-draggable form-horizontal prepare-dragging");
           _this.hooks.move.drag = function(e, defer) {
-            var droppable, id, _ref, _results;
+            var droppable, id, ref, results;
             if ($clone.hasClass('prepare-dragging')) {
               $clone.css({
                 width: $element.width(),
@@ -761,23 +726,23 @@
               top: e.pageY - $clone.height() / 2
             });
             _this.autoScroll.start(e);
-            _ref = _this.data.droppables;
-            _results = [];
-            for (id in _ref) {
-              droppable = _ref[id];
+            ref = _this.data.droppables;
+            results = [];
+            for (id in ref) {
+              droppable = ref[id];
               if (_this.isHover($clone, $(droppable.element))) {
-                _results.push(droppable.move(e, result));
+                results.push(droppable.move(e, result));
               } else {
-                _results.push(droppable.out(e, result));
+                results.push(droppable.out(e, result));
               }
             }
-            return _results;
+            return results;
           };
           _this.hooks.up.drag = function(e) {
-            var droppable, id, isHover, _ref;
-            _ref = _this.data.droppables;
-            for (id in _ref) {
-              droppable = _ref[id];
+            var droppable, id, isHover, ref;
+            ref = _this.data.droppables;
+            for (id in ref) {
+              droppable = ref[id];
               isHover = _this.isHover($clone, $(droppable.element));
               droppable.up(e, isHover, result);
             }
@@ -816,7 +781,7 @@
           }
           $element.addClass('prepare-dragging');
           _this.hooks.move.drag = function(e, defer) {
-            var droppable, id, _ref;
+            var droppable, id, ref;
             if ($element.hasClass('prepare-dragging')) {
               $element.css({
                 width: $element.width(),
@@ -833,9 +798,9 @@
               top: e.pageY - $element.height() / 2
             });
             _this.autoScroll.start(e);
-            _ref = _this.data.droppables;
-            for (id in _ref) {
-              droppable = _ref[id];
+            ref = _this.data.droppables;
+            for (id in ref) {
+              droppable = ref[id];
               if (_this.isHover($element, $(droppable.element))) {
                 droppable.move(e, result);
               } else {
@@ -844,10 +809,10 @@
             }
           };
           _this.hooks.up.drag = function(e) {
-            var droppable, id, isHover, _ref;
-            _ref = _this.data.droppables;
-            for (id in _ref) {
-              droppable = _ref[id];
+            var droppable, id, isHover, ref;
+            ref = _this.data.droppables;
+            for (id in ref) {
+              droppable = ref[id];
               isHover = _this.isHover($element, $(droppable.element));
               droppable.up(e, isHover, result);
             }
@@ -896,7 +861,7 @@
     })(this);
     this.draggable = (function(_this) {
       return function($element, options) {
-        var draggable, element, result, _i, _j, _len, _len1;
+        var draggable, element, i, j, len, len1, result;
         if (options == null) {
           options = {};
         }
@@ -911,15 +876,15 @@
          */
         result = [];
         if (options.mode === 'mirror') {
-          for (_i = 0, _len = $element.length; _i < _len; _i++) {
-            element = $element[_i];
+          for (i = 0, len = $element.length; i < len; i++) {
+            element = $element[i];
             draggable = _this.dragMirrorMode($(element), options.defer, options.object);
             result.push(draggable.id);
             _this.data.draggables[draggable.id] = draggable;
           }
         } else {
-          for (_j = 0, _len1 = $element.length; _j < _len1; _j++) {
-            element = $element[_j];
+          for (j = 0, len1 = $element.length; j < len1; j++) {
+            element = $element[j];
             draggable = _this.dragDragMode($(element), options.defer, options.object);
             result.push(draggable.id);
             _this.data.draggables[draggable.id] = draggable;
@@ -930,7 +895,7 @@
     })(this);
     this.droppable = (function(_this) {
       return function($element, options) {
-        var droppable, element, result, _i, _len;
+        var droppable, element, i, len, result;
         if (options == null) {
           options = {};
         }
@@ -944,8 +909,8 @@
             out: The custom mouse out callback. (e, draggable)->
          */
         result = [];
-        for (_i = 0, _len = $element.length; _i < _len; _i++) {
-          element = $element[_i];
+        for (i = 0, len = $element.length; i < len; i++) {
+          element = $element[i];
           droppable = _this.dropMode($(element), options);
           result.push(droppable);
           _this.data.droppables[droppable.id] = droppable;
@@ -970,6 +935,36 @@
 }).call(this);
 
 (function() {
+  var formlyPropertiesReplacer, undesiredKey;
+
+  undesiredKey = function(key) {
+    if (key === 'id' || key === 'component' || key === 'editable' || key === 'index') {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  formlyPropertiesReplacer = function(key, value) {
+    if (typeof key === 'string' && (key.charAt(0) === '$' || undesiredKey(key))) {
+      return void 0;
+    } else {
+      return value;
+    }
+  };
+
+  angular.module('builder.filter', []).filter('formlyJSON', function() {
+    return function(object) {
+      if (object === void 0) {
+        void 0;
+      }
+      return JSON.stringify(object, formlyPropertiesReplacer, '  ');
+    };
+  });
+
+}).call(this);
+
+(function() {
   angular.module('builder', ['builder.directive']);
 
 }).call(this);
@@ -989,7 +984,7 @@
  */
 
 (function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   angular.module('builder.provider', []).provider('$builder', function() {
     var $http, $injector, $templateCache;
@@ -997,7 +992,7 @@
     $http = null;
     $templateCache = null;
     this.config = {
-      popoverPlacement: 'right'
+      popoverPlacement: 'auto right'
     };
     this.components = {};
     this.groups = [];
@@ -1008,24 +1003,20 @@
       "default": []
     };
     this.convertComponent = function(name, component) {
-      var result, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+      var ref, ref1, ref2, ref3, ref4, ref5, ref6, result;
       result = {
         name: name,
-        group: (_ref = component.group) != null ? _ref : 'Default',
-        label: (_ref1 = component.label) != null ? _ref1 : '',
-        description: (_ref2 = component.description) != null ? _ref2 : '',
-        placeholder: (_ref3 = component.placeholder) != null ? _ref3 : '',
-        editable: (_ref4 = component.editable) != null ? _ref4 : true,
-        required: (_ref5 = component.required) != null ? _ref5 : false,
-        validation: (_ref6 = component.validation) != null ? _ref6 : '/.*/',
-        validationOptions: (_ref7 = component.validationOptions) != null ? _ref7 : [],
-        options: (_ref8 = component.options) != null ? _ref8 : [],
-        arrayToText: (_ref9 = component.arrayToText) != null ? _ref9 : false,
+        group: (ref = component.group) != null ? ref : 'Default',
+        key: (ref1 = component.key) != null ? ref1 : 'unique_id',
+        type: (ref2 = component.type) != null ? ref2 : '',
+        editable: (ref3 = component.editable) != null ? ref3 : true,
+        inputTypes: (ref4 = component.inputTypes) != null ? ref4 : [],
+        validationOptions: (ref5 = component.validationOptions) != null ? ref5 : [],
         template: component.template,
         templateUrl: component.templateUrl,
         popoverTemplate: component.popoverTemplate,
         popoverTemplateUrl: component.popoverTemplateUrl,
-        templateOptions: (_ref10 = angular.copy(component.templateOptions)) != null ? _ref10 : {
+        templateOptions: (ref6 = angular.copy(component.templateOptions)) != null ? ref6 : {
           options: []
         }
       };
@@ -1038,7 +1029,7 @@
       return result;
     };
     this.convertFormObject = function(name, formObject) {
-      var component, result, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+      var component, ref, ref1, ref2, ref3, ref4, result;
       if (formObject == null) {
         formObject = {};
       }
@@ -1049,23 +1040,19 @@
       result = {
         id: formObject.id,
         component: formObject.component,
-        editable: (_ref = formObject.editable) != null ? _ref : component.editable,
-        index: (_ref1 = formObject.index) != null ? _ref1 : 0,
-        label: (_ref2 = formObject.label) != null ? _ref2 : component.label,
-        description: (_ref3 = formObject.description) != null ? _ref3 : component.description,
-        placeholder: (_ref4 = formObject.placeholder) != null ? _ref4 : component.placeholder,
-        options: (_ref5 = formObject.options) != null ? _ref5 : component.options,
-        required: (_ref6 = formObject.required) != null ? _ref6 : component.required,
-        validation: (_ref7 = formObject.validation) != null ? _ref7 : component.validation,
-        templateOptions: (_ref8 = angular.copy(formObject.templateOptions)) != null ? _ref8 : angular.copy(component.templateOptions)
+        editable: (ref = formObject.editable) != null ? ref : component.editable,
+        index: (ref1 = formObject.index) != null ? ref1 : 0,
+        key: (ref2 = formObject.key) != null ? ref2 : component.key,
+        type: (ref3 = formObject.type) != null ? ref3 : component.type,
+        templateOptions: (ref4 = angular.copy(formObject.templateOptions)) != null ? ref4 : angular.copy(component.templateOptions)
       };
       return result;
     };
     this.reindexFormObject = (function(_this) {
       return function(name) {
-        var formObjects, index, _i, _ref;
+        var formObjects, i, index, ref;
         formObjects = _this.forms[name];
-        for (index = _i = 0, _ref = formObjects.length; _i < _ref; index = _i += 1) {
+        for (index = i = 0, ref = formObjects.length; i < ref; index = i += 1) {
           formObjects[index].index = index;
         }
       };
@@ -1100,7 +1087,7 @@
     };
     this.registerComponent = (function(_this) {
       return function(name, component) {
-        var newComponent, _ref;
+        var newComponent, ref;
         if (component == null) {
           component = {};
         }
@@ -1130,7 +1117,7 @@
           if ($injector != null) {
             _this.loadTemplate(newComponent);
           }
-          if (_ref = newComponent.group, __indexOf.call(_this.groups, _ref) < 0) {
+          if (ref = newComponent.group, indexOf.call(_this.groups, ref) < 0) {
             _this.groups.push(newComponent.group);
           }
         } else {
@@ -1140,7 +1127,7 @@
     })(this);
     this.addFormObject = (function(_this) {
       return function(name, formObject) {
-        var _base;
+        var base;
         if (formObject == null) {
           formObject = {};
         }
@@ -1148,15 +1135,15 @@
         /*
         Insert the form object into the form at last.
          */
-        if ((_base = _this.forms)[name] == null) {
-          _base[name] = [];
+        if ((base = _this.forms)[name] == null) {
+          base[name] = [];
         }
         return _this.insertFormObject(name, _this.forms[name].length, formObject);
       };
     })(this);
     this.insertFormObject = (function(_this) {
       return function(name, index, formObject) {
-        var _base;
+        var base;
         if (formObject == null) {
           formObject = {};
         }
@@ -1178,8 +1165,8 @@
             [index]: {int} The form object index. It will be updated by $builder.
         @return: The form object.
          */
-        if ((_base = _this.forms)[name] == null) {
-          _base[name] = [];
+        if ((base = _this.forms)[name] == null) {
+          base[name] = [];
         }
         if (index > _this.forms[name].length) {
           index = _this.forms[name].length;
@@ -1227,11 +1214,11 @@
     this.$get = [
       '$injector', (function(_this) {
         return function($injector) {
-          var component, name, _ref;
+          var component, name, ref;
           _this.setupProviders($injector);
-          _ref = _this.components;
-          for (name in _ref) {
-            component = _ref[name];
+          ref = _this.components;
+          for (name in ref) {
+            component = ref[name];
             _this.loadTemplate(component);
           }
           return {
